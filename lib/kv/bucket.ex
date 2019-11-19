@@ -6,6 +6,11 @@ defmodule KV.Bucket do
     Quando interagimos com a API do Agent, estamos, na verdade, enviando e recebendo mensagens para o processo que está rodando em loop. Dizemos que esse processo atua como servidor. 
     A função anônima que passamos nas chamadas das API são executadas no lado do servidor. Isso significa que se você colocar muitas operações dentro da função anônima, o processo vai ficar ocupado com ela e só vai atender requisições de outros clientes após ter terminado todas as operações. Enquanto ele processa, os outros clientes ficam aguardando e podem acabar entrando em timeout.
     Por isso, seja sábio ao definir o que vai ser executado no lado do servidor (dentro da função anônima) e o que vai ser executado no lado cliente (fora da função anônima, isto é, antes de se fazer a chamada da API).
+
+    Essa forma de se operar com estados é muito crua por dois motivos: 
+        1) Veja que o Bucket criado não tem nome. E se quiséssemos ter vários Buckets diferentes,  cada um persistindo dados de diferentes categorias? Ao se interagir com a API do Agent você até poderia passar um nome (um atom) para uma instância do Agent, que passaria a ser identificada por esse nome. MAS ISSO SERIA UMA MÁ IDEIA! Pois Existe um limite de atoms que podem ser declarados. Isso causaria uma vulnerabilidade, pois um cliente poderia ficar solicitando a criação de diferentes buckets até esgotar esse limite, o que resultaria em um crash da aplicação!
+        2) Com relação a erros, caso um dos buckets pare de funcionar devido a algum bug nenhuma parte do app vai saber que isso aconteceu, pois não há nenhum tipo de monitoramento quanto a isso.
+    Esses problemas são resolvidos por um processo que abstrai tudo isso, conhecido como "GenServer", além de deixar a relação cliente/servidor mais explícita.
     """
     use Agent
 
