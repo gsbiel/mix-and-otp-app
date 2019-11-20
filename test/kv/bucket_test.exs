@@ -7,7 +7,7 @@ defmodule KV.BucketTest do
     # Essa macro é uma callback que é chamada antes de cada um dos testes definidos neste módulo. Ela basicamente cria um bucket e o retorna dentro de um mapa.
     # Esse mapa é passado como argumento para os testes, que podem acessá-lo a partir do mecanismo de "pattern matching".
     setup do
-        {:ok, bucket} = KV.Bucket.start_link([])
+        bucket = start_supervised!(KV.Bucket)
         %{bucket: bucket}
     end
 

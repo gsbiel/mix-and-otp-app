@@ -26,21 +26,21 @@ defmodule KV.Bucket do
     Obter um valor do "Bucket" a partir de uma "key"
     """
     def get(bucket, key) do
-        Agent.get(bucket, fn bucket -> Map.get(bucket, key) end )
+        Agent.get(bucket, fn state -> Map.get(state, key) end )
     end
 
     @doc """
     Inserir um valor, identificado por uma "key", dentro do "Bucket"
     """
     def put(bucket, key, value) do
-        Agent.update(bucket, fn bucket -> Map.put(bucket, key, value) end )
+        Agent.update(bucket, fn state -> Map.put(state, key, value) end )
     end
 
     @doc """
     Deletar um valor do "bucket", a partir de uma "key"
     """
     def delete(bucket, key) do
-        Agent.get_and_update(bucket, fn bucket -> Map.pop(bucket, key) end)
+        Agent.get_and_update(bucket, fn state -> Map.pop(state, key) end)
     end
 
 
