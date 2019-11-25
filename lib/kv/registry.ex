@@ -83,14 +83,14 @@ defmodule KV.Registry do
             refs = Map.put(refs, ref, name)
             # No mapa de nomes dos buckets, o nome aponta para a referência do bucket (processo)
             names = Map.put(names, name, bucket)
-            {:noreply, {names, refs}
+            {:noreply, {names, refs} }
         end
     end
 
     @impl true
     def hande_info({:DOWN, ref, :process, _pid, _reason}, {names, refs}) do
         # Remove do mapa "refs" a chave "ref" (processo monitor) e retorna o valor que estava nela antes da remoção que, no caso, é o nome do bucket (processo que estava sendo monitorado).
-        {names, refs} = Map.pop(refs,ref)
+        {name, refs} = Map.pop(refs,ref)
         # Remove do mapa "names" o par chave-valor correspondente a "name"
         names = Map.delete(names,name)
         {:noreply, {names, refs}}
