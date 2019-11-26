@@ -12,7 +12,7 @@ defmodule KV.Bucket do
         2) Com relação a erros, caso um dos buckets pare de funcionar devido a algum bug nenhuma parte do app vai saber que isso aconteceu, pois não há nenhum tipo de monitoramento quanto a isso.
     Esses problemas são resolvidos por um processo que abstrai tudo isso, conhecido como "GenServer", além de deixar a relação cliente/servidor mais explícita.
     """
-    use Agent
+    use Agent, restart: :temporary
 
     @doc """
     Starts a new bucket.

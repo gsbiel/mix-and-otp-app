@@ -77,16 +77,19 @@ defmodule KV.Registry do
             {:noreply, {names,refs}}
         else
             # Ao se criar um novo bucket (que é um processo), deve-se criar também um processo supervisor para o mesmo.
-            {:ok, bucket} = KV.Bucket.start_link([])
-            ref = Process.monitor(bucket)
+            {:ok, pid} = DynamicSupervisor.start_child(KV.BucketSupervisor, KV.Bucket)
+            ref = Process.monitor(pid)
             # No mapa de referências dos supervisores, a referência do supervisor aponta para o nome do bucket que o mesmo supervisiona.
             refs = Map.put(refs, ref, name)
             # No mapa de nomes dos buckets, o nome aponta para a referência do bucket (processo)
-            names = Map.put(names, name, bucket)
+            names = Map.put(names, name, pid)
             {:noreply, {names, refs} }
         end
     end
 
+    @doc """
+    Essa callback é executada sempre que mensagens chegam ao GenServer, que não seja calls and casts. Nesse caso, estamos interessados apenas em interceptar as mensagens indicando a queda de um dos buckets, pois, nessa situação temos que remover esse bucket, agora vazio, do nosso registro de buckets.
+    """
     @impl true
     def hande_info({:DOWN, ref, :process, _pid, _reason}, {names, refs}) do
         # Remove do mapa "refs" a chave "ref" (processo monitor) e retorna o valor que estava nela antes da remoção que, no caso, é o nome do bucket (processo que estava sendo monitorado).
