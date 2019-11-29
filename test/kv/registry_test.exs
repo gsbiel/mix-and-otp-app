@@ -32,7 +32,7 @@ defmodule KV.RegistryTest do
         # Interrompe o bucket de forma anormal
         # Até a versão do capítulo 4 esse teste falharia, porque o bucket está sendo interrompido por uma razão diferente de :normal. Quando isso acontece, o bucket (que é um processo do tipo Agent) vai enviar uma mensagem de exit a todos os processos com os quais está linkado. Nesse caso, cada bucket está linkado ao processo Registry, que o iniciou (através da função start_link()). Todos os processos que receberem essa mensagem vão parar também. Assim, quando um bucket falha, o Registry também falha. Por isso acontecerá um erro em KV.Registry.lookup, já que KV.Registry não vai mais existir!
         # Para evitar que o Registro pare quando um dos buckets quebra, deve-se criar um supervisor para eles!
-        Agent.stop(bucket, :shutdown)
+        Agent.stop(bucket,:shutdown)
         assert KV.Registry.lookup(registry, "shopping") == :error
     end
 end

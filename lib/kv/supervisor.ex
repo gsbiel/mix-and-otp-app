@@ -17,9 +17,10 @@ defmodule KV.Supervisor do
     @impl true
     def init(:ok) do
         children = [
+            # A ordem é importante! Como o KV.BucketSupervisor é chamado por KV.Registry, é importante que o primeiro já tenha sido iniciado ao ser chamado pelo segundo!
+            {DynamicSupervisor, name: KV.BucketSupervisor, strategy: :one_for_one},
             {KV.Registry, name: KV.Registry},
-            {DynamicSupervisor, name: KV.BucketSupervisor, strategy: :one_for_one}
         ]
-        Supervisor.init(children, strategy: :one_for_one)
+        Supervisor.init(children, strategy: :one_for_all)
     end
 end
